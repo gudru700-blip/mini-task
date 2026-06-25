@@ -190,15 +190,13 @@ def save_to_csv(compounds, output_file="compound_database.csv"):
 
     df = df[columns]
     df.to_csv(output_file, index=False, encoding="utf-8-sig")
-
+    
+    
+    sample = df[df['Linked_BioAssays'] != ''].head(10)
     if not sample.empty:
-        print(
-            sample[["cid", "Name", "Linked_BioAssays", "Data_Source"]]
-            .head(10)
-            .to_string(index=False)
-        )
+        print(sample[['cid', 'Name', 'Linked_BioAssays', 'Data_Source']].head(10).to_string(index=False))
     else:
-        print("  (Активности не найдены)")
+        print(df[['cid', 'Name', 'Data_Source']].head(10).to_string(index=False))
 
 
 def main():
