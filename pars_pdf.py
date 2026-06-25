@@ -86,9 +86,7 @@ def extract_compounds_from_pdf(pdf_path):
 
 
 def remove_duplicates(compounds):
-    """Удаляет повторяющиеся соединения по названию"""
-    print("\n🔍 Удаление дубликатов...")
-
+    
     seen = set()
     unique = []
 
@@ -99,10 +97,7 @@ def remove_duplicates(compounds):
             unique.append(comp)
 
     removed = len(compounds) - len(unique)
-    if removed > 0:
-        print(f"  ✅ Удалено {removed} дубликатов")
-    else:
-        print(f"  ✅ Дубликатов не найдено")
+    
 
     return unique
 
@@ -133,7 +128,6 @@ def check_in_pubchem(name):
 
 
 def validate_compounds_in_pubchem(compounds):
-    print("\n🔍 Проверка соединений в PubChem...")
 
     validated = []
     total = len(compounds)
@@ -142,11 +136,8 @@ def validate_compounds_in_pubchem(compounds):
         print(f"  [{i}/{total}] Проверка: {comp['name'][:50]}...")
 
         if check_in_pubchem(comp["name"]):
-            print(f"  Найдено в PubChem")
             comp["in_pubchem"] = True
             validated.append(comp)
-        else:
-            print(f"  Не найдено в PubChem - удаляем")
 
         time.sleep(0.5)
 
@@ -158,15 +149,8 @@ def parse_all_pdfs():
     all_compounds = []
     pdf_files = list(Path(".").glob("*.pdf"))
 
-    print(f"Найдено {len(pdf_files)} PDF файлов")
-
     for pdf_file in pdf_files:
         compounds = extract_compounds_from_pdf(pdf_file)
-        print(f" найдено {len(compounds)} соединений")
-        for comp in compounds[:3]:
-            print(f"    - {comp['name'][:60]}...")
-            if comp["activities"]:
-                print(f"      Активности: {comp['activities']}")
         all_compounds.extend(compounds)
 
     return all_compounds
@@ -207,13 +191,6 @@ def save_to_csv(compounds, output_file="compound_database.csv"):
     df = df[columns]
     df.to_csv(output_file, index=False, encoding="utf-8-sig")
 
-    print(f"База данных сохранена в {output_file}")
-    print(f" Всего соединений: {len(df)}")
-    print(f"  Найдено в PubChem: {df[df['In_PubChem'] == True].shape[0]}")
-    print(f"  Не найдено в PubChem: {df[df['In_PubChem'] == False].shape[0]}")
-
-    print("Примеры соединений с активностями:")
-    sample = df[df["Linked_BioAssays"] != ""].head(10)
     if not sample.empty:
         print(
             sample[["cid", "Name", "Linked_BioAssays", "Data_Source"]]
@@ -225,7 +202,6 @@ def save_to_csv(compounds, output_file="compound_database.csv"):
 
 
 def main():
-    print("ИЗВЛЕЧЕНИЕ СОЕДИНЕНИЙ ИЗ PDF С ПРОВЕРКОЙ В PUBCHEM")
 
     compounds = parse_all_pdfs()
 
